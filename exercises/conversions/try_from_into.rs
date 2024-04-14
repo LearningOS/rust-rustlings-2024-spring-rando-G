@@ -13,9 +13,9 @@ use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, PartialEq)]
 struct Color {
-    red: u8,
-    green: u8,
-    blue: u8,
+    red: i16,
+    green: i16,
+    blue: i16,
 }
 
 // We will use this error type for these `TryFrom` conversions.
@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -41,6 +41,18 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let res= if tuple.0<0||tuple.0>255{
+            Result::Err(IntoColorError::IntConversion)
+        }else{
+            Ok(Color{
+                red:tuple.0,
+                green:tuple.1,
+                blue:tuple.2
+            })
+        };
+        res
+
+
     }
 }
 
@@ -48,6 +60,18 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let res=if arr[0]<0||arr[1]>255{
+            Result::Err(IntoColorError::IntConversion)
+        }else {
+            Ok(Color{
+                red:arr[0],
+                green:arr[1],
+                blue:arr[2]
+            })
+        };
+        res
+
+
     }
 }
 
@@ -55,6 +79,37 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        // let res=if slice[0]<0||slice[1]>255{
+        //     c
+        // }else {
+        //     Ok(Color{
+        //         red:slice[0],
+        //         green:slice[1],
+        //         blue:slice[2]
+        //     })
+
+        // };
+            match slice.len(){
+                3usize=>{
+                    let res=if slice[0]<0||slice[1]>255{
+                        Result::Err(IntoColorError::IntConversion)
+                    } else {
+                        Ok(Color{
+                            red:slice[0],
+                            green:slice[1],
+                            blue:slice[2]
+                        })
+
+
+                    };
+                    res
+                }
+                _=>{
+                    Err(IntoColorError::BadLen)
+                }
+            }
+
+
     }
 }
 
