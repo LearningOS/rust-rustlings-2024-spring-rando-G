@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,14 +69,44 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
+    where
+    T: std::cmp::Ord+Clone,
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut merged_list = LinkedList::new();
+    
+        while let (Some(mut node_a), Some(mut node_b)) = (list_a.start, list_b.start) {
+            let val_a;
+            let val_b;
+            
+            unsafe {
+                val_a = (*node_a.as_ptr()).val.clone();
+                val_b = (*node_b.as_ptr()).val.clone();
+            }
+            
+            if val_a <= val_b {
+                merged_list.add(val_a);
+                list_a.start = unsafe { (*node_a.as_ptr()).next };
+            } else {
+                merged_list.add(val_b);
+                list_b.start = unsafe { (*node_b.as_ptr()).next };
+            }
         }
+        
+        while let Some(mut node_a) = list_a.start {
+            let val_a = unsafe { (*node_a.as_ptr()).val.clone() };
+            merged_list.add(val_a);
+            list_a.start = unsafe { (*node_a.as_ptr()).next };
+        }
+        
+        while let Some(mut node_b) = list_b.start {
+            let val_b = unsafe { (*node_b.as_ptr()).val.clone() };
+            merged_list.add(val_b);
+            list_b.start = unsafe { (*node_b.as_ptr()).next };
+        }
+        
+        merged_list
+
 	}
 }
 
